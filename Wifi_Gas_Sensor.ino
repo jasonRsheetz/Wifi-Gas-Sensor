@@ -26,7 +26,8 @@ String APIkey = "E2TKCCBA49LSZK2Q";
 String channelID = "379840";
 float pm10 = 0;
 float pm25 = 0;
-
+boolean upload = false;
+int dataNumber = 0;
 
 void setup() 
 {
@@ -80,12 +81,11 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
     //turn the pm sensor off
     PmSensor.Sleep();
     
+    //get temp and humidity
+    get temp and humidity
+    
     //upload the data
-    UploadOzone();
-    UploadPM25();
-    UploadPM10();
-    UploadTemp();
-    UploadHumidity();
+    UploadData(dataNumber);
 
 
     //reset the counter
@@ -110,7 +110,7 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
 //purpose: to upload values to thingspeak
 //parameters: none
 //returns: nothing
-void UploadOzone()
+void UploadData(int _dataNumber)
 {
 
 //establish connection with thingspeak.com
@@ -155,6 +155,7 @@ void InitTimer1(void)
   TCCR1A = 0;
   TCCR1B = 0;
   
+  //set the output compare register
   OCR1A = 15642;
   
   //turn on clear timer on compare mode
@@ -187,8 +188,19 @@ ISR(TIMER1_COMPA_vect)
       elapsedSeconds = 0;
     }
     
+    if(elapsedSeconds%15 == 0)
+    {
+      upload = true;
+    }
+    
 }
-//---------------------END initTimer1 ISR FUNCTION---------------------//
+//---------------------END initTimer1ISR FUNCTION---------------------//
+
+//NAME: InitTimer0
+//PURPOSE: setup timer 0 as a 16 second timer
+//PARAMETERS: none
+//RETURNS: none
+
 
 
 //---------------------BEGIN InitADC FUNCTION---------------------//
