@@ -1,0 +1,145 @@
+Exception in thread Thread-5:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-6:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-7:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-12:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-13:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-14:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-15:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
+Exception in thread Thread-23:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 82, in open
+  File "serial\serialwin32.pyo", line 202, in _reconfigurePort
+ValueError: Cannot configure port, some setting was wrong. Original message: WindowsError(31, 'A device attached to the system is not functioning.')
+
+Exception in thread Thread-24:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 82, in open
+  File "serial\serialwin32.pyo", line 202, in _reconfigurePort
+ValueError: Cannot configure port, some setting was wrong. Original message: WindowsError(31, 'A device attached to the system is not functioning.')
+
+Exception in thread Thread-25:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 82, in open
+  File "serial\serialwin32.pyo", line 202, in _reconfigurePort
+ValueError: Cannot configure port, some setting was wrong. Original message: WindowsError(31, 'A device attached to the system is not functioning.')
+
+Exception in thread Thread-26:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 82, in open
+  File "serial\serialwin32.pyo", line 202, in _reconfigurePort
+ValueError: Cannot configure port, some setting was wrong. Original message: WindowsError(31, 'A device attached to the system is not functioning.')
+
+Exception in thread Thread-27:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 82, in open
+  File "serial\serialwin32.pyo", line 202, in _reconfigurePort
+ValueError: Cannot configure port, some setting was wrong. Original message: WindowsError(31, 'A device attached to the system is not functioning.')
+
+Exception in thread Thread-29:
+Traceback (most recent call last):
+  File "threading.pyo", line 810, in __bootstrap_inner
+  File "esp8266_flasher.py", line 19, in run
+  File "downloader.pyo", line 54, in __init__
+  File "serial\serialwin32.pyo", line 38, in __init__
+  File "serial\serialutil.pyo", line 282, in __init__
+  File "serial\serialwin32.pyo", line 66, in open
+SerialException: could not open port 'COM13': WindowsError(5, 'Access is denied.')
+
