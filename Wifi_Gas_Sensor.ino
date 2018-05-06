@@ -8,8 +8,6 @@
 //software serial object for wifi module
 SoftwareSerial mySerialWifi(2, 3); // RX, TX
 
-
-
 TempSensor temp;
 SDS011 PmSensor;
 
@@ -27,7 +25,10 @@ String channelID = "379840";
 float pm10 = 0;
 float pm25 = 0;
 boolean upload = false;
-int dataNumber = 0;
+int num_data = 4;
+int temperature = 0;
+int humidity = 0;
+
 
 void setup() 
 {
@@ -82,17 +83,39 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
     PmSensor.Sleep();
     
     //get temp and humidity
-    get temp and humidity
+    temp.Read();
+    temperature =temp.GetTemp();
+    humidity = temp.GetHumidity();
     
-    //upload the data
-    UploadData(dataNumber);
-
-
     //reset the counter
     elapsedMinutes = 0;
 
     //start interrupts
     sei();
+    
+    upload = true;
+    
+    //upload the data
+    for(uint8_t i = 0; i <= num_data; i++)
+    {
+      
+      //wait 15 seconds
+      while(!upload){};
+      
+      switch(i)
+      {
+        case 0  :  UploadData(O3count);
+        case 1  :  UploadData(pm10);
+        case 2  :  UploadData(pm25);
+        case 3  :  UploadData(temperature);
+        case 4  :  UploadData(humidity);
+      }
+      
+      upload = false;
+    }
+
+//put the wifi module to sleep, 30 seconds 
+mySerialWifi.println("AT+GSLP=30000");
   }
   
   
@@ -113,28 +136,28 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
 void UploadData(int _dataNumber)
 {
 
-//establish connection with thingspeak.com
-mySerialWifi.println("AT+CIPSTART=\"TCP\",\"184.106.153.149\",80");
-delay(3000);
+  //establish connection with thingspeak.com
+  mySerialWifi.println("AT+CIPSTART=\"TCP\",\"184.106.153.149\",80");
+  delay(3000);
 
-//the length of the web address for thingspeak 40 characters, plus to for the newline and carriage return characters
-uint8_t webAddressLength = 42;
-//find the length of the data
-String dataToString = String(O3count);
-uint8_t dataLength =dataToString.length()+webAddressLength;
-String dataLengthToString = String(dataLength);
-String dataLengthcmd = "AT+CIPSEND=";
-dataLengthcmd += dataLengthToString;
-Serial.println(dataLengthcmd);
-//send the data length
-mySerialWifi.println(dataLengthcmd);
-delay(3000);
+  //the length of the web address for thingspeak 40 characters, plus to for the newline and carriage return characters
+  uint8_t webAddressLength = 42;
+  //find the length of the data
+  String dataToString = String(O3count);
+  uint8_t dataLength =dataToString.length()+webAddressLength;
+  String dataLengthToString = String(dataLength);
+  String dataLengthcmd = "AT+CIPSEND=";
+  dataLengthcmd += dataLengthToString;
+  Serial.println(dataLengthcmd);
+  //send the data length
+  mySerialWifi.println(dataLengthcmd);
+  delay(3000);
 
-String dataToSend = "GET /update?key=E2TKCCBA49LSZK2Q&field1=";
-dataToSend += dataToString;
-mySerialWifi.println(dataToSend);
-delay(500);
-mySerialWifi.println("AT+CIPCLOSE");
+  String dataToSend = "GET /update?key=E2TKCCBA49LSZK2Q&field1=";
+  dataToSend += dataToString;
+  mySerialWifi.println(dataToSend);
+  delay(500);
+  mySerialWifi.println("AT+CIPCLOSE");
 
 }
 //---------------------END UploadData FUNCTION---------------------//
@@ -195,11 +218,6 @@ ISR(TIMER1_COMPA_vect)
     
 }
 //---------------------END initTimer1ISR FUNCTION---------------------//
-
-//NAME: InitTimer0
-//PURPOSE: setup timer 0 as a 16 second timer
-//PARAMETERS: none
-//RETURNS: none
 
 
 
