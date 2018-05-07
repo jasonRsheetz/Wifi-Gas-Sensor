@@ -4,9 +4,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-
 //software serial object for wifi module
 SoftwareSerial mySerialWifi(2, 3); // RX, TX
+SoftwareSerial PmSerial(9, 8); // RX, TX
 
 TempSensor temp;
 SDS011 PmSensor;
@@ -15,15 +15,17 @@ SDS011 PmSensor;
 uint8_t oneMinute = 60;
 uint8_t elapsedSeconds = 0;
 uint8_t elapsedMinutes = 0;
-uint8_t sensorOffTime = 1;
+uint8_t sensorOffTime = 25;
 bool sensorOn = false;
-uint8_t warmUpTime = 1;
+uint8_t warmUpTime = 5;
 uint16_t O3count = 0;
 uint8_t decimal = 0;
 String APIkey = "E2TKCCBA49LSZK2Q";
 String channelID = "379840";
-float pm10 = 0;
-float pm25 = 0;
+float p10;
+float p25;
+int pm10int = 0;
+int pm25int = 0;
 boolean upload = false;
 int num_data = 4;
 int temperature = 0;
@@ -37,30 +39,26 @@ void setup()
   
   // set the data rate for the SoftwareSerial port
   mySerialWifi.begin(9600);
+  PmSerial.begin(9600);
   
-  
- //set port b2 as an output
-DDRB |= (1 << PB2);
+ //set port PD7 as an output
+DDRD |= (1 << PD7);
 
 InitTimer1();
 InitADC();
 
 //start the PM sensor off in sleep mode
-PmSensor.Sleep();
+//PmSensor.Sleep();
 }
 
 void loop() { // run over and over
-
-
+    
 //if enough time has passed, turn the sensor on to warm up
   if(elapsedMinutes >= sensorOffTime)
   {
     //turn the gas sensor on
-    PORTB |= (1 << PB2);
+    PORTD |= (1 << PD7);
     sensorOn = true;
-    
-    //turn the PM sensor on
-    PmSensor.Wake();
   }
 
 //if the sensor has been on for 5 minutes, sample, turn off the sensor, and upload data
@@ -69,19 +67,28 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
     //turn interrupts off
     cli();
     
+    //turn the PM sensor on
+    //PmSensor.Wake();
+    
     //get O3 data
     GetADC();
     
     //turn the O3 sensor off
-    PORTB &= ~(1 << PB2);
+    PORTD &= ~(1 << PD7);
     sensorOn = false;
-    
+
+
     //get PM data
-    PmSensor.Read(&pm10, &pm25);
-    
+    ReadPm();
+    p10 = p10*100;
+    p25 = p25*100;
+    pm10int = int(p10);
+    pm25int = int(p25);
+    Serial.println(pm25int);
     //turn the pm sensor off
-    PmSensor.Sleep();
-    
+    //PmSensor.Sleep();
+
+
     //get temp and humidity
     temp.Read();
     temperature =temp.GetTemp();
@@ -98,24 +105,38 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
     //upload the data
     for(uint8_t i = 0; i <= num_data; i++)
     {
-      
-      //wait 15 seconds
-      while(!upload){};
-      
+     
       switch(i)
       {
-        case 0  :  UploadData(O3count);
-        case 1  :  UploadData(pm10);
-        case 2  :  UploadData(pm25);
-        case 3  :  UploadData(temperature);
-        case 4  :  UploadData(humidity);
+        case 0  :  UploadData(O3count, i);
+        Serial.print("03 = ");
+        Serial.println(O3count);
+        break;
+        case 1  :  UploadData(pm10int, i);
+        Serial.print("pm10 = ");
+        Serial.println(pm10int);
+        break;
+        case 2  :  UploadData(pm25int, i);
+        Serial.print("pm25 = ");
+        Serial.println(pm25int);
+        break;
+        case 3  :  UploadData(temperature, i);
+        Serial.print("temperature = ");
+        Serial.println(temperature);
+        break;
+        case 4  :  UploadData(humidity, i);
+        Serial.print("humidity = ");
+        Serial.println(humidity);
+        break;
       }
       
-      upload = false;
+      //wait 15 seconds
+      _delay_ms(20000);
+      
     }
 
 //put the wifi module to sleep, 30 seconds 
-mySerialWifi.println("AT+GSLP=30000");
+mySerialWifi.println("AT+GSLP=1500000");
   }
   
   
@@ -127,13 +148,60 @@ mySerialWifi.println("AT+GSLP=30000");
   }
 }
 
+void ReadPm()
+{
+  byte buff;
+
+  int value;
+  int len = 0;
+  int pm10_serial = 0;
+  int pm25_serial = 0;
+  int checksum_is;
+  int checksum_ok = 0;
+  int error = 1;
+  
+  while ((PmSerial.available() > 0) && (PmSerial.available() >= (10-len))) {
+    buff = PmSerial.read();
+    value = int(buff);
+    switch (len) {
+      case (0): if (value != 170) { len = -1; }; break;
+      case (1): if (value != 192) { len = -1; }; break;
+      case (2): pm25_serial = value; checksum_is = value; break;
+      case (3): pm25_serial += (value << 8); checksum_is += value; break;
+      case (4): pm10_serial = value; checksum_is += value; break;
+      case (5): pm10_serial += (value << 8); checksum_is += value; break;
+      case (6): checksum_is += value; break;
+      case (7): checksum_is += value; break;
+      case (8): if (value == (checksum_is % 256)) { checksum_ok = 1; } else { len = -1; }; break;
+      case (9): if (value != 171) { len = -1; }; break;
+    }
+    len++;
+
+  
+    if (len == 10 && checksum_ok == 1) {
+      p10 = (float)pm10_serial/10.0;
+      p25 = (float)pm25_serial/10.0;
+      len = 0; checksum_ok = 0; pm10_serial = 0.0; pm25_serial = 0.0; checksum_is = 0;
+      error = 0;
+
+    }
+    //yield();
+          
+}
+
+delay(3000);
+  
+}
+
+
+
 
 //---------------------BEGIN UploadData FUNCTION---------------------//
 //UploadData
 //purpose: to upload values to thingspeak
 //parameters: none
 //returns: nothing
-void UploadData(int _dataNumber)
+void UploadData(int _data, int _field)
 {
 
   //establish connection with thingspeak.com
@@ -143,7 +211,7 @@ void UploadData(int _dataNumber)
   //the length of the web address for thingspeak 40 characters, plus to for the newline and carriage return characters
   uint8_t webAddressLength = 42;
   //find the length of the data
-  String dataToString = String(O3count);
+  String dataToString = String(_data);
   uint8_t dataLength =dataToString.length()+webAddressLength;
   String dataLengthToString = String(dataLength);
   String dataLengthcmd = "AT+CIPSEND=";
@@ -153,7 +221,11 @@ void UploadData(int _dataNumber)
   mySerialWifi.println(dataLengthcmd);
   delay(3000);
 
-  String dataToSend = "GET /update?key=E2TKCCBA49LSZK2Q&field1=";
+  _field++;
+  String dataToSend = "GET /update?key=E2TKCCBA49LSZK2Q&field";
+  dataToSend += String(_field);
+  dataToSend += "=";
+  
   dataToSend += dataToString;
   mySerialWifi.println(dataToSend);
   delay(500);
@@ -209,11 +281,6 @@ ISR(TIMER1_COMPA_vect)
     {
       elapsedMinutes++;
       elapsedSeconds = 0;
-    }
-    
-    if(elapsedSeconds%15 == 0)
-    {
-      upload = true;
     }
     
 }
