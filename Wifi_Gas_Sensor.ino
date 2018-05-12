@@ -48,7 +48,10 @@ InitTimer1();
 InitADC();
 
 //start the PM sensor off in sleep mode
-//PmSensor.Sleep();
+PmSensor.Sleep();
+
+//start with a sample, set elapsed time to 25 minutes
+elapsedMinutes = sensorOffTime;
 }
 
 void loop() { // run over and over
@@ -62,13 +65,13 @@ void loop() { // run over and over
   }
 
 //if the sensor has been on for 5 minutes, sample, turn off the sensor, and upload data
-if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
+if((sensorOn == true) && (elapsedMinutes >= warmUpTime + sensorOffTime))
   {
     //turn interrupts off
     cli();
     
     //turn the PM sensor on
-    //PmSensor.Wake();
+    PmSensor.Wake();
     
     //get O3 data
     GetADC();
@@ -86,7 +89,7 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime))
     pm25int = int(p25);
     Serial.println(pm25int);
     //turn the pm sensor off
-    //PmSensor.Sleep();
+    PmSensor.Sleep();
 
 
     //get temp and humidity
@@ -199,14 +202,14 @@ delay(3000);
 //---------------------BEGIN UploadData FUNCTION---------------------//
 //UploadData
 //purpose: to upload values to thingspeak
-//parameters: none
+//parameters: two integers, one for the data, the other for the thingspeak channel number
 //returns: nothing
 void UploadData(int _data, int _field)
 {
 
   //establish connection with thingspeak.com
   mySerialWifi.println("AT+CIPSTART=\"TCP\",\"184.106.153.149\",80");
-  delay(3000);
+  delay(2000);
 
   //the length of the web address for thingspeak 40 characters, plus to for the newline and carriage return characters
   uint8_t webAddressLength = 42;
@@ -219,7 +222,7 @@ void UploadData(int _data, int _field)
   Serial.println(dataLengthcmd);
   //send the data length
   mySerialWifi.println(dataLengthcmd);
-  delay(3000);
+  delay(2000);
 
   _field++;
   String dataToSend = "GET /update?key=E2TKCCBA49LSZK2Q&field";
