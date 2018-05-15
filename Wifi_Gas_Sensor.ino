@@ -1,3 +1,5 @@
+#include <LiquidCrystal.h>
+
 #include <SDS011.h>
 #include <TempSensor.h>
 #include <SoftwareSerial.h>
@@ -8,8 +10,9 @@
 SoftwareSerial mySerialWifi(2, 3); // RX, TX
 SoftwareSerial PmSerial(9, 8); // RX, TX
 
+LiquidCrystal lcd(4, 5, 6, 10, 11, 12, 13);
 TempSensor temp;
-SDS011 PmSensor;
+SDS011 PmSensor; 
 
 //declare variables
 uint8_t oneMinute = 60;
@@ -31,9 +34,21 @@ int num_data = 4;
 int temperature = 0;
 int humidity = 0;
 
+int tempRow = 0;
+int humidityRow = 1;
+int O3Row = 2;
+int pmRow = 3;
+int tempColumn = 12;
+int humidityColumn = 9;
+int O3Column = 6;
+int pm10Column = 5;
+int pm25Column = 14;
+
 
 void setup() 
 {
+  lcd.begin(20, 4);
+  
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
   
@@ -52,6 +67,17 @@ PmSensor.Sleep();
 
 //start with a sample, set elapsed time to 25 minutes
 elapsedMinutes = sensorOffTime;
+
+lcd.setCursor(0, tempRow);
+lcd.print("Temperature: ");
+lcd.setCursor(0, humidityRow);
+lcd.print("Humidity: ");
+lcd.setCursor(0, O3Row);
+lcd.print("Ozone: ");
+lcd.setCursor(0, pmRow);
+lcd.print("PM10: ");
+lcd.setCursor(10, pmRow);
+lcd.print("2.5: ");
 }
 
 void loop() { // run over and over
@@ -87,7 +113,7 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime + sensorOffTime))
     p25 = p25*100;
     pm10int = int(p10);
     pm25int = int(p25);
-    Serial.println(pm25int);
+ 
     //turn the pm sensor off
     PmSensor.Sleep();
 
@@ -105,6 +131,18 @@ if((sensorOn == true) && (elapsedMinutes >= warmUpTime + sensorOffTime))
     
     upload = true;
     
+    //update the lcd
+    lcd.setCursor(tempColumn, tempRow);
+  lcd.print(temperature);
+  lcd.setCursor(humidityColumn, humidityRow);
+  lcd.print(humidity);
+  lcd.setCursor(O3Column, O3Row);
+  lcd.print(O3count);
+  lcd.setCursor(pm10Column, pmRow);
+  lcd.print(pm10int);
+  lcd.setCursor(pm25Column, pmRow);
+  lcd.print(pm25int);
+
     //upload the data
     for(uint8_t i = 0; i <= num_data; i++)
     {
